@@ -4,7 +4,7 @@ A tool to alleviate the pain of having to extract .zip and .rar files and place 
 
 # WIP
 
-This is a work in progress and as such has bugs and missing features.
+ This is a work in progress and contains bugs and missing features. :bug:
 
 To Do:
 <ul>
@@ -12,3 +12,10 @@ To Do:
   <li>Handle that situation by setting some new syntax to the command line arguments</li>
   <li>Create a unit test</li>
 </ul>
+
+<br>
+<br>
+
+### Built With
+
+C# with WPF (Windows Presentation Foundation)
