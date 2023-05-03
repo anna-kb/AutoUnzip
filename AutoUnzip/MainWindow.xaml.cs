@@ -172,13 +172,7 @@ namespace AutoUnzip
                 }
                 catch (Exception ex)
                 {
-                    using (StreamWriter writer = new StreamWriter(sourceFolder, true))
-                    {
-                        writer.WriteLine($"{DateTime.Now}: {ex.Message}");
-                    }
-
-                    MessageBox.Show($"An error occured and an error log was generated in {sourceFolder}.");
-                    break;
+                    MessageBox.Show($"Encountered error in ProcessFile: {ex.Message}");
                 }
             }
         }
@@ -194,7 +188,7 @@ namespace AutoUnzip
 
             if (matches.Count > 0)
             {
-                bool replace = ReplacePrompt(matches);
+                bool replace = ReplacePrompt(matches, file);
                 if (!replace)
                 {
                     return;
@@ -253,7 +247,6 @@ namespace AutoUnzip
                 foreach (string potentialMatch in fileNames)
                 {
                     string checkString = destinationFolder + $"\\{potentialMatch}";
-                    System.Diagnostics.Debug.WriteLine(checkString);
                     if (File.Exists(checkString))
                     {
                         fileMatches.Add(potentialMatch);
@@ -311,7 +304,7 @@ namespace AutoUnzip
 
         }
 
-        private bool ReplacePrompt(List<string> files)
+        private bool ReplacePrompt(List<string> files, string archive)
         {
             string listString = "";
 
@@ -321,7 +314,7 @@ namespace AutoUnzip
                 if (i != files.Count - 1)
                     listString += "\n";
             }
-            MessageBoxResult result = MessageBox.Show($"The following files exist in the destination folder. Do you want to replace them? \n \n {listString}",
+            MessageBoxResult result = MessageBox.Show($"The following files from archive {archive} exist in the destination folder. Do you want to replace them? \n \n {listString}",
                 "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
