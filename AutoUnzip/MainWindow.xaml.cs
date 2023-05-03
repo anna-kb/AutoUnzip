@@ -71,10 +71,8 @@ namespace AutoUnzip
             DataContext = this;
             InitializeComponent();
 
-            _sourceFolder = "C:\\Users\\Meepi\\Desktop\\delete\\sims3";
-            //Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads";
-            _destinationFolder = "C:\\Users\\Meepi\\Desktop\\delete\\sims3\\testDestination";
-            //Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Documents\Electronic Arts\The Sims 3\Mods\Packages";
+            _sourceFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads";
+            _destinationFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Documents\Electronic Arts\The Sims 3\Mods\Packages";
             _progressValue = 0;
             _progressString = "";
         }
