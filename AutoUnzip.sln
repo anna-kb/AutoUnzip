@@ -3,7 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoUnzip", "AutoUnzip\AutoUnzip.csproj", "{68945B27-9C2A-4D64-94D3-3E8033147B0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoUnzip", "AutoUnzip\AutoUnzip.csproj", "{68945B27-9C2A-4D64-94D3-3E8033147B0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{E3DE989C-7413-4FF8-AEDC-B7F3F0FF8E8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3C0F009F-E769-4AED-B937-FA9DA6F49554}"
+	ProjectSection(SolutionItems) = preProject
+		deploy-autounzip.yml = deploy-autounzip.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +25,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3C0F009F-E769-4AED-B937-FA9DA6F49554} = {E3DE989C-7413-4FF8-AEDC-B7F3F0FF8E8A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F5CECDA6-E44E-4B7C-90CE-5517F450F5DD}
