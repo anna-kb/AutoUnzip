@@ -27,20 +27,28 @@ namespace AutoUnzip
 
         public string sourceFolder
         {
-            get { return _sourceFolder; }
+            get { return userSettings.Default.DefaultSourceFolder == "" ? 
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads" : 
+                    userSettings.Default.DefaultSourceFolder; }
             set
             {
-                _sourceFolder = value;
+                userSettings.Default.DefaultSourceFolder = value;
+                userSettings.Default.Save();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("sourceFolder"));
             }
         }
 
         public string destinationFolder
         {
-            get { return _destinationFolder; }
+            get {
+                return userSettings.Default.DefaultDestinationFolder == "" ?
+                  Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Documents\" :
+                   userSettings.Default.DefaultDestinationFolder;
+            }
             set
             {
-                _destinationFolder = value;
+                userSettings.Default.DefaultDestinationFolder = value;
+                userSettings.Default.Save();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("destinationFolder"));
             }
         }
@@ -71,10 +79,8 @@ namespace AutoUnzip
             DataContext = this;
             InitializeComponent();
 
-            _sourceFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads";
-            _destinationFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Documents\Electronic Arts\The Sims 3\Mods\Packages";
-            _progressValue = 0;
-            _progressString = "";
+            progressValue = 0;
+            progressString = "";
         }
 
 
@@ -85,7 +91,7 @@ namespace AutoUnzip
         private void browseBtn_Click(object sender, RoutedEventArgs e)
         {
             WinForms.FolderBrowserDialog dialog = new WinForms.FolderBrowserDialog();
-            
+
             Button button = (Button)sender;
             bool isDestination = button.Name == "destinationBtn";
 
@@ -113,8 +119,8 @@ namespace AutoUnzip
             if (processing)
                 return;
 
-            if(deleteCheckBox.IsChecked == false)
-            StartProcessing();
+            if (deleteCheckBox.IsChecked == false)
+                StartProcessing();
             else
             {
                 WarnUser();
@@ -131,7 +137,7 @@ namespace AutoUnzip
             List<string> files = System.IO.Directory.GetFiles(sourceFolder).Where(file => file.ToLower().EndsWith(".zip") || file.ToLower().EndsWith(".rar")).ToList();
             await Task.Run(() =>
             {
-                for(int i=0; i < files.Count; i++)
+                for (int i = 0; i < files.Count; i++)
                 {
                     Dispatcher.Invoke(() => progressString = "Working on " + files[i] + "...");
                     Dispatcher.Invoke(() => progressValue = (int)Math.Floor(((float)i / (float)files.Count) * 100f));
@@ -157,10 +163,11 @@ namespace AutoUnzip
          */
         private void DeleteAllFiles(List<string> files)
         {
-            foreach(var file in files)
+            foreach (var file in files)
             {
 
-                try{
+                try
+                {
                     if (!File.Exists(file))
                         continue;
 
@@ -188,7 +195,7 @@ namespace AutoUnzip
             //Check if destination already contains file
             List<string> matches = CheckForMatches(file);
 
-            if(matches.Count >0)
+            if (matches.Count > 0)
             {
                 bool replace = ReplacePrompt(matches);
                 if (!replace)
@@ -246,7 +253,7 @@ namespace AutoUnzip
 
                 List<string> fileNames = ParseOutput(output);
 
-                foreach(string potentialMatch in fileNames)
+                foreach (string potentialMatch in fileNames)
                 {
                     string checkString = destinationFolder + $"\\{potentialMatch}";
                     System.Diagnostics.Debug.WriteLine(checkString);
@@ -262,7 +269,7 @@ namespace AutoUnzip
                 System.Diagnostics.Debug.WriteLine($"Encountered error in CheckForMatches: {ex.Message}");
             }
             finally
-            {            
+            {
                 process.Dispose();
             }
 
@@ -281,7 +288,7 @@ namespace AutoUnzip
             int indexOfDelimiter = Array.FindIndex(lines, (l => l.Contains(delimiter)));
             int indexOfNameColumn = lines[indexOfDelimiter - 1].IndexOf("Name");
 
-            for(int i = indexOfDelimiter+1; i < lines.Length; i++)
+            for (int i = indexOfDelimiter + 1; i < lines.Length; i++)
             {
                 if (lines[i].StartsWith(delimiter))  // we've reached the end of the file output.
                     break;
@@ -300,7 +307,7 @@ namespace AutoUnzip
         {
             MessageBoxResult result = MessageBox.Show("Warning: All zip files will be deleted after unzipping. Proceed?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-            if(result == MessageBoxResult.Yes)
+            if (result == MessageBoxResult.Yes)
             {
                 StartProcessing();
             }
@@ -311,13 +318,13 @@ namespace AutoUnzip
         {
             string listString = "";
 
-            for(int i =0; i < files.Count;i++)
+            for (int i = 0; i < files.Count; i++)
             {
                 listString += files[i];
                 if (i != files.Count - 1)
                     listString += "\n";
             }
-            MessageBoxResult result = MessageBox.Show($"The following files exist in the destination folder. Do you want to replace them? \n \n {listString}", 
+            MessageBoxResult result = MessageBox.Show($"The following files exist in the destination folder. Do you want to replace them? \n \n {listString}",
                 "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
