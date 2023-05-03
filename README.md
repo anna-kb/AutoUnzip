@@ -8,7 +8,7 @@ A tool to alleviate the pain of having to extract .zip and .rar files and place 
 
 <ul>
 <li> Individual file replace/skipping instead of the whole .zip </li>
-<li> Additional unzipper functionality </li>
+<li> Functionality with additional file extracting software </li>
 </ul>
 
 
