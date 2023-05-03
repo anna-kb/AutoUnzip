@@ -15,13 +15,10 @@ namespace AutoUnzip
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private string _sourceFolder;
-        private string _destinationFolder;
         private string _progressString;
         private int _progressValue;
         private bool processing = false;
-        private bool replaceAll = false;
-        private bool skipAll = false;
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
