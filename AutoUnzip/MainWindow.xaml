@@ -13,7 +13,7 @@
             <RowDefinition Height="2*"
                        MinHeight="45"
                        MaxHeight="100"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="2*"
                        MinHeight="45"
                        MaxHeight="100"/>
@@ -34,13 +34,13 @@
             <ColumnDefinition  />
             <ColumnDefinition Width="20"  />
         </Grid.ColumnDefinitions>
-        <TextBlock  Text="Choose Source folder"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" />
-        <TextBlock  Text="Source Folder:" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1"/>
+
+        <TextBlock  Text="Source Folder: " Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1"/>
         <TextBox Name="sourceBox" Text="{Binding sourceFolder}" Grid.Row="2"  Grid.Column="2" Grid.ColumnSpan="3" Margin="10" MaxHeight="25"/>
         <Button Name="sourceBtn"  Content="Browse"  Click="browseBtn_Click" Grid.Row="2"  Grid.Column="5" Margin="10" MaxHeight="25" MaxWidth="80" HorizontalAlignment="Left"/>
 
-        <TextBlock  Text="Choose Destination folder"  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="5"  />
-        <TextBlock  Text="Destination Folder:" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" />
+ 
+        <TextBlock  Text="Destination Folder: " Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" />
         <TextBox Name="destinationBox" Text="{Binding destinationFolder}" Grid.Row="4"  Grid.Column="2" Grid.ColumnSpan="3" Margin="10" MaxHeight="25"/>
         <Button Name="destinationBtn"  Content="Browse"  Click="browseBtn_Click" Grid.Row="4"  Grid.Column="5" Margin="10" MaxHeight="25" MaxWidth="80" HorizontalAlignment="Left"/>
 
