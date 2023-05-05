@@ -7,9 +7,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using System.Windows.Shapes;
-using System.Media;
+using Microsoft.Win32;
+
 
 namespace AutoUnzip
 {
@@ -22,14 +21,31 @@ namespace AutoUnzip
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public string sourceFolder
+        public string programPath
         {
-            get { return userSettings.Default.DefaultSourceFolder == "" ? 
-                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads" : 
-                    userSettings.Default.DefaultSourceFolder; }
+            get
+            {
+                return userSettings.Default.ProgramFilePath;
+            }
             set
             {
-                userSettings.Default.DefaultSourceFolder = value;
+                userSettings.Default.ProgramFilePath = value;
+                userSettings.Default.Save();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("programPath"));
+            }
+        }
+
+        public string sourceFolder
+        {
+            get
+            {
+                return userSettings.Default.SourceFolder == "" ?
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads" :
+                    userSettings.Default.SourceFolder;
+            }
+            set
+            {
+                userSettings.Default.SourceFolder = value;
                 userSettings.Default.Save();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("sourceFolder"));
             }
@@ -37,14 +53,15 @@ namespace AutoUnzip
 
         public string destinationFolder
         {
-            get {
-                return userSettings.Default.DefaultDestinationFolder == "" ?
+            get
+            {
+                return userSettings.Default.DestinationFolder == "" ?
                   Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Documents\" :
-                   userSettings.Default.DefaultDestinationFolder;
+                   userSettings.Default.DestinationFolder;
             }
             set
             {
-                userSettings.Default.DefaultDestinationFolder = value;
+                userSettings.Default.DestinationFolder = value;
                 userSettings.Default.Save();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("destinationFolder"));
             }
@@ -83,7 +100,7 @@ namespace AutoUnzip
 
         /*
          * Handles the Browse button's Click event. Depending on the sender of the event,
-         * update the source or destination folder path.
+         * update the source destination folder path, or program file path.
          * */
         private void browseBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -108,6 +125,22 @@ namespace AutoUnzip
         }
 
         /*
+         * handle the click to find the 7zip executable. 
+         * */
+        private void filePathBtn_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Executable files (*.exe)|*.exe|All files(*.*)|*.*";
+
+            dialog.InitialDirectory = System.IO.Path.GetDirectoryName(userSettings.Default.ProgramFilePath);
+
+            if (dialog.ShowDialog() == true)
+            {
+                programPath = dialog.FileName;
+            }
+        }
+
+        /*
          * Handles the submit button click. Confirm with user that files will be deleted,
          * then start processing.
          * */
@@ -115,6 +148,15 @@ namespace AutoUnzip
         {
             if (processing)
                 return;
+
+            //Check if 7zip exe is correct
+            string programFile = System.IO.Path.GetFileName(userSettings.Default.ProgramFilePath);
+            if(programFile != "7z.exe")
+            {
+                MessageBox.Show($"{programFile} is not a valid 7z.exe. Please select a valid executable.");
+                return;
+            }
+
 
             if (deleteCheckBox.IsChecked == false)
                 StartProcessing();
@@ -130,6 +172,7 @@ namespace AutoUnzip
          */
         private async void StartProcessing()
         {
+
             processing = true;
             List<string> files = System.IO.Directory.GetFiles(sourceFolder).Where(file => file.ToLower().EndsWith(".zip") || file.ToLower().EndsWith(".rar")).ToList();
             await Task.Run(() =>
@@ -156,33 +199,13 @@ namespace AutoUnzip
 
 
         /*
-         * Deletes zip files after processing all files if user checked  the box.
-         */
-        private void DeleteAllFiles(List<string> files)
-        {
-            foreach (var file in files)
-            {
-
-                try
-                {
-                    if (!File.Exists(file))
-                        continue;
-
-                    File.Delete(file);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Encountered error in ProcessFile: {ex.Message}");
-                }
-            }
-        }
-
-        /*
          * First, check if the destination contains files within the zip files. Prompt the user to replace or skip in that case.
          * Then, start a new Process with the overwrite argument (if user skipped, then assume always overwrite)
          */
         private void ProcessFile(string file)
         {
+            //Check if 7zip is installed, and in the main directory.
+
             //Check if destination already contains file
             List<string> matches = CheckForMatches(file);
 
@@ -196,7 +219,7 @@ namespace AutoUnzip
             }
 
             var startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = @"C:\Program Files\7-Zip\7z.exe";
+            startInfo.FileName = userSettings.Default.ProgramFilePath;
             startInfo.Arguments = $"x \"{file}\" -o\"{destinationFolder}\" -aoa";
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.UseShellExecute = false;
@@ -227,7 +250,7 @@ namespace AutoUnzip
             List<string> fileMatches = new List<string>();
 
             var startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = @"C:\Program Files\7-Zip\7z.exe";
+            startInfo.FileName = userSettings.Default.ProgramFilePath;
             startInfo.Arguments = $"l \"{file}\" -o\"{destinationFolder}\"";
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.UseShellExecute = false;
@@ -291,6 +314,28 @@ namespace AutoUnzip
             }
 
             return files;
+        }
+
+        /*
+  * Deletes zip files after processing all files if user checked  the box.
+  */
+        private void DeleteAllFiles(List<string> files)
+        {
+            foreach (var file in files)
+            {
+
+                try
+                {
+                    if (!File.Exists(file))
+                        continue;
+
+                    File.Delete(file);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Encountered error in ProcessFile: {ex.Message}");
+                }
+            }
         }
 
         private void WarnUser()

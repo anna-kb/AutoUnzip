@@ -26,24 +26,36 @@ namespace AutoUnzip {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DefaultSourceFolder {
+        public string SourceFolder {
             get {
-                return ((string)(this["DefaultSourceFolder"]));
+                return ((string)(this["SourceFolder"]));
             }
             set {
-                this["DefaultSourceFolder"] = value;
+                this["SourceFolder"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DefaultDestinationFolder {
+        public string DestinationFolder {
             get {
-                return ((string)(this["DefaultDestinationFolder"]));
+                return ((string)(this["DestinationFolder"]));
             }
             set {
-                this["DefaultDestinationFolder"] = value;
+                this["DestinationFolder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files\\7-Zip\\7z.exe")]
+        public string ProgramFilePath {
+            get {
+                return ((string)(this["ProgramFilePath"]));
+            }
+            set {
+                this["ProgramFilePath"] = value;
             }
         }
     }
